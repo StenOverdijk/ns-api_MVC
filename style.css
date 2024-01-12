@@ -1,0 +1,8 @@
+.custom-blue-bar {
+    background-color: #0D47A1; /* Default Bootstrap blue color */
+    color: #FFFFFF; /* White text color */
+}
+
+.table td {
+    color: #0D47A1; /* Dark blue text color for table cells */
+}
