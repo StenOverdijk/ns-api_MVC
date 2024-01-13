@@ -1,10 +1,92 @@
+// used https://www.taniarascia.com/javascript-mvc-todo-app/ as example
+
+class Model {
+    constructor() { 
+
+        this.departures = []
+
+        console.log("Model Created");
+    }
+    
+    clearDepartures() {
+        this.departures = [];
+    }
+
+    addDepartures(departures) {
+        console.log(departures);
+        this.departures.push(...departures);
+    }
+
+}
+
+class View {
+    constructor() { 
+        console.log("View Created");
+    }
+
+}
+
+class Controller {
+    constructor(model, view) {
+        this.station = "Rm";
+        this.maxJourneys = 10;
+        this.apiUrl = `https://gateway.apiportal.ns.nl/reisinformatie-api/api/v2/departures?lang=en&station=${this.station}&maxJourneys=${this.maxJourneys}`;
+        this.apiKey = "e65d65e7a82b4f2c9c2b5ec34deac34c"
+        this.refreshInterval = 10000; // 10 seconds
+        this.model = model;
+        this.view = view;
+        console.log("Controller Created");
+        console.log("MVC Ready");
+        // Initial load of departures
+        this.loadDepartures();
+        // Refresh every ten seconds
+        setInterval(() => this.loadDepartures(), this.refreshInterval);
+
+    }
+
+    loadDepartures() {
+        console.log("loading departures from NS-Api...");
+        fetch(this.apiUrl, {
+            method: 'GET',
+            headers: {
+                "Ocp-Apim-Subscription-Key": this.apiKey,
+                "Accept": "application/json"
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            console.log("Departures loaded from NS-Api");
+            return response.json();
+        })
+        .then(data => {
+            const departures = data.payload.departures;
+            this.model.clearDepartures();
+            this.model.addDepartures(departures);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            this.model.clearDepartures();
+        });
+    }
+
+
+}
+
+
+
+
 document.addEventListener('DOMContentLoaded', function() {
+
+    const app = new Controller(new Model(), new View());
+
     // Call the function to get departures
     getDepartures();
 
 
     // refresh
-    setInterval(getDepartures, 1000);
+    
 });
 
 function getDepartures() {
