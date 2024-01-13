@@ -140,13 +140,13 @@ class Controller {
         console.log("MVC Ready");
         // Initial load of departures
         this.loadDepartures();
-        this.view.displayDepartures(this.model.departures);
         // Refresh every ten seconds
         setInterval(() => this.loadDepartures(), this.refreshInterval);
     }
 
     loadDepartures() {
         console.log("loading departures from NS-Api...");
+
         fetch(this.apiUrl, {
             method: 'GET',
             headers: {
@@ -165,18 +165,16 @@ class Controller {
                 const departures = data.payload.departures;
                 this.model.clearDepartures();
                 this.model.addDepartures(departures);
+                this.view.displayDepartures(this.model.departures);
             })
             .catch(error => {
                 console.error('Error:', error);
                 this.model.clearDepartures();
+                this.view.displayDepartures(this.model.departures);
+
             });
     }
-
-
 }
-
-
-
 
 document.addEventListener('DOMContentLoaded', function () {
 
